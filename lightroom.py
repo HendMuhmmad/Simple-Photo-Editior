@@ -12,6 +12,47 @@ from gui import Ui_MainWindow
 from crop import Ui_Dialog
 import os
 
+
+class Crop(QtWidgets.QDialog ,Ui_Dialog):
+    def __init__(self,path, parent=None):
+        super(Crop, self).__init__(parent)
+        self.ui = Ui_Dialog()
+        self.ui.setupUi(self)
+        self.begin = QtCore.QPoint()
+        self.end = QtCore.QPoint()
+        self.path = path
+        self.crop = False
+        self.ui.save.accepted.connect(lambda : self.crop_slot())
+        self.ui.save.rejected.connect(lambda : self.no_crop())
+        # self.ui..clicked.connect(lambda : self.click_load_image())
+
+    def crop_slot(self):
+        self.crop = True
+        self.close()
+
+    def no_crop(self):
+        self.crop=False
+        self.close()
+
+    def paintEvent(self, event):
+        qp = QtGui.QPainter(self)
+        pixmap = QPixmap(self.path)
+        self.setGeometry(500,100,pixmap.width(),pixmap.height())
+        qp.drawPixmap(0,0,pixmap.width(),pixmap.height(),pixmap)
+        br = QtGui.QBrush(QtGui.QColor(100, 10, 10, 40))  
+        qp.setBrush(br)   
+        qp.drawRect(QtCore.QRect(self.begin, self.end))       
+
+    def mousePressEvent(self, event):
+        self.begin = event.pos()
+        self.end = event.pos()
+        self.update()
+
+    def mouseMoveEvent(self, event):
+        self.end = event.pos()
+        self.update()
+
+
 class Main(QtWidgets.QMainWindow ,Ui_MainWindow):
     def __init__(self, parent=None):
         super(Main, self).__init__(parent)
@@ -114,16 +155,92 @@ class Main(QtWidgets.QMainWindow ,Ui_MainWindow):
     #img type
     #cropping direction
     def click_Crop(self):
-        pass
+        dialog=Crop(self.imagePath)
+        
+        dialog.exec_()
+        if dialog.crop:
+            img = Image.open(self.imagePath)
+            x1 = dialog.begin.x()
+            y1 = dialog.begin.y()
+            x2 = dialog.end.x()
+            y2 = dialog.end.y()
+            im1 = img.crop((x1, y1, x2, y2))
+            im1.save('cropped_image.'+self.img_format)
+            pixmap= QPixmap('cropped_image.'+self.img_format)
+            scaled = pixmap.scaled(self.op_size)
+            self.ui.outputimage.setPixmap(scaled)
+            # self.ui.outputimage.setScaledContents(True)
+            # self.ui.outputimage.setPixmap(QPixmap(pixmap))
+            self.imagePath = self.cwd+"/cropped_image."+self.img_format
     
     def Sharpen(self):
-        pass
+        sharpenfactor = self.ui.sharpening.value() 
+        self.ui.sharp_label.setText(str(sharpenfactor))
+        sharpenfactor=sharpenfactor/100
+        # image=self.image_copy
+
+        im = Image.open(self.imagePath)
+        enhancer = ImageEnhance.Sharpness(im)
+        if(sharpenfactor*10>0):
+            im_s_1 = enhancer.enhance(sharpenfactor*10)
+            im_s_1.save('sharpened-image.'+self.img_format)
+            # new_image=cv.imread('sharpened-image.png')
+        # else:
+        #     new_image=image
+
+        pixmap= QPixmap('sharpened-image.'+self.img_format)
+        scaled = pixmap.scaled(self.op_size)#,QtCore.Qt.KeepAspectRatio)
+        self.ui.outputimage.setPixmap(scaled)
 
     def SmoothBlur(self):
-        pass
+        blur =self.ui.smoothing.value()
+        self.ui.smooth_label.setText(str(blur))
+        blur=blur/100
+        image=cv2.imread(self.imagePath)
+        s=image.shape
+        MaxFilterSize=min(s[:1])
+        FilterSize =int(MaxFilterSize*blur/10)
+        if(FilterSize):
+            new_image_s_1=cv2.blur(image,(FilterSize,FilterSize),0)
+            new_image_s_1 =cv2.imwrite('smoothed-image.'+self.img_format,new_image_s_1)
+        #     new_image=cv.imread('smoothed-image.png')
+        # else:
+        #     new_image=image
+        
+        pixmap= QPixmap('smoothed-image.'+self.img_format)
+        scaled = pixmap.scaled(self.op_size)
+        self.ui.outputimage.setPixmap(scaled)
 
     def Vignette(self):
-        pass
+        factor=self.ui.vignette.value()
+        self.ui.v_label.setText(str(factor))
+        factor=(factor+50)/100
+
+        image=cv2.imread(self.imagePath)
+
+        rows, cols, = image.shape[:2]
+        # print(rows)
+        # print(cols)
+        # generating vignette mask using Gaussian kernels
+        factorx=int(factor*cols)
+        factory=int(factor*rows)
+        kernel_x = cv2.getGaussianKernel(cols,factorx)
+        kernel_y = cv2.getGaussianKernel(rows,factory)
+        kernel = kernel_y * kernel_x.T
+        mask = 255 * kernel / np.linalg.norm(kernel)
+        output = np.copy(image)
+        # print(mask)
+        # applying the mask to each channel in the input image
+        for i in range(3):
+            # print(i)
+            output[:,:,i] = output[:,:,i] * mask
+   
+        cv2.imwrite('vignette-image.'+self.img_format,output)
+        # new_image=cv.imread('vignette-image.png')
+
+        pixmap= QPixmap('vignette-image.'+self.img_format)
+        scaled = pixmap.scaled(self.op_size)
+        self.ui.outputimage.setPixmap(scaled)
 
     def BlackAndWhite(self):
         pass
