@@ -258,19 +258,125 @@ class Main(QtWidgets.QMainWindow ,Ui_MainWindow):
         pass
 
     def Temp(self):
-        pass
+        temperaturedfactor =self.ui.tempreture.value()
+        self.ui.temp_label.setText(str(temperaturedfactor))
+        temperaturedfactor=temperaturedfactor/100
+        # image=self.image_copy
+        im = Image.open(self.imagePath)
+        im = im.convert('RGB')
+        filter = ImageEnhance.Color(im) 
+        if(temperaturedfactor*10>0): 
+            im_s_1=filter.enhance(temperaturedfactor*10) 
+            im_s_1.save('temp_image.'+self.img_format);  
+            # new_image=cv.imread('temp_image.png') 
+        else: 
+            im_s_2=filter.enhance(temperaturedfactor*10) 
+            im_s_2.save('temp_image.'+self.img_format);  
+            # new_image2=cv.imread('temp_image.png')  
+        
+        pixmap= QPixmap('temp_image.'+self.img_format)
+        scaled = pixmap.scaled(self.op_size)
+        self.ui.outputimage.setPixmap(scaled)
 
     def LOGO(self):
-        pass
+        # image =self.image_copy
+        im = Image.open(self.imagePath) 
+        im = im.convert('RGB')
+        # logo = cv.imread('logo.PNG')
+        lo = Image.open('logo.PNG')
+
+        im_copy = im.copy()
+
+        position = ((im_copy.width - lo.width), (im_copy.height - lo.height))
+
+        im_copy.paste(lo, position)
+
+        im_copy.save('looged_image.'+self.img_format)
+        # im_copy=cv.imread('looged_image.png')  
+        pixmap= QPixmap('looged_image.'+self.img_format)
+        scaled = pixmap.scaled(self.op_size)
+        self.ui.outputimage.setPixmap(scaled)
+        self.imagePath = self.cwd+"/looged_image."+self.img_format
 
     def Effects(self): 
-        pass
+        number=self.ui.coloreffects.value()
+        self.ui.label_4.setText(str(number))
+        
+        # image =self.image_copy
+        im_gray = cv2.imread(self.imagePath,cv2.IMREAD_GRAYSCALE)
+        if number==1:
+         im_color= cv2.applyColorMap(im_gray,cv2.COLORMAP_AUTUMN) 
+        elif number==2: 
+          im_color= cv2.applyColorMap(im_gray,cv2.COLORMAP_BONE)  
+        elif number==3: 
+          im_color= cv2.applyColorMap(im_gray,cv2.COLORMAP_JET)  
+        elif number==4: 
+          im_color= cv2.applyColorMap(im_gray,cv2.COLORMAP_WINTER)  
+        elif number==5: 
+          im_color= cv2.applyColorMap(im_gray,cv2.COLORMAP_RAINBOW)  
+        elif number==6: 
+          im_color= cv2.applyColorMap(im_gray,cv2.COLORMAP_OCEAN) 
+        elif number==7: 
+          im_color= cv2.applyColorMap(im_gray,cv2.COLORMAP_SUMMER) 
+        elif number==8: 
+          im_color= cv2.applyColorMap(im_gray,cv2.COLORMAP_SPRING)     
+        elif number==9: 
+          im_color= cv2.applyColorMap(im_gray,cv2.COLORMAP_COOL)     
+        elif number==10: 
+          im_color= cv2.applyColorMap(im_gray,cv2.COLORMAP_HSV)  
+        elif number==11: 
+          im_color= cv2.applyColorMap(im_gray,cv2.COLORMAP_PINK)  
+        elif number==12: 
+          im_color= cv2.applyColorMap(im_gray,cv2.COLORMAP_HOT)      
+        elif number==13 : 
+          im_color=im_gray
+        else:
+            im_color = cv2.imread(self.imagePath)
+            
+        
+        im_color =cv2.imwrite('effected_image.'+self.img_format,im_color)
+        # im_color=cv.imread('effected_image.png')
+        pixmap= QPixmap('effected_image.'+self.img_format)
+        scaled = pixmap.scaled(self.op_size)
+        self.ui.outputimage.setPixmap(scaled)
+
 
     def saturation(self):
-        pass
+        # -300 to 300 
+        value=self.ui.saturation.value()
+        self.ui.sat_label.setText(str(value))
+        image =cv2.imread(self.imagePath)
+        image_hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV).astype("float32")
+        (h, s, v) = cv2.split(image_hsv)
+        s= s+value
+        s = np.clip(s, 0, 255)
+        image_hsv = cv2.merge([h, s, v])
+        new_img = cv2.cvtColor(image_hsv.astype("uint8"), cv2.COLOR_HSV2BGR) 
+        new_img =cv2.imwrite('saturation_image.'+self.img_format,new_img)
+        # new_image=cv.imread('saturation_image.png') 
+        
+        pixmap= QPixmap('saturation_image.'+self.img_format)
+        scaled = pixmap.scaled(self.op_size)
+        self.ui.outputimage.setPixmap(scaled)
 
     def cartoon(self):
-        pass
+        cartoon_image = cv2.imread(self.imagePath)
+
+        gray_image = cv2.cvtColor(cartoon_image, cv2.COLOR_BGR2GRAY)
+        gray_image = cv2.medianBlur(gray_image,7)  
+        edges = cv2.adaptiveThreshold(gray_image,255,cv2.ADAPTIVE_THRESH_MEAN_C, 
+                                        cv2.THRESH_BINARY,9,2) 
+
+
+        color = cv2.bilateralFilter(cartoon_image, 9, 9, 7) 
+        cartoon = cv2.bitwise_and(color, color, mask=edges)
+        cv2.imwrite('cartoon-image.'+self.img_format,cartoon)
+        # new_image=cv.imread('cartoon-image.png') 
+        
+        pixmap= QPixmap('cartoon-image.'+self.img_format)
+        scaled = pixmap.scaled(self.op_size)
+        self.ui.outputimage.setPixmap(scaled)
+        self.imagePath = self.cwd+"/cartoon-image."+self.img_format  
 
 
 if __name__ == "__main__":
