@@ -242,20 +242,75 @@ class Main(QtWidgets.QMainWindow ,Ui_MainWindow):
         scaled = pixmap.scaled(self.op_size)
         self.ui.outputimage.setPixmap(scaled)
 
-    def BlackAndWhite(self):
-        pass
+    def BlackAndWhite(self): 
+        originalImage=cv2.imread(self.imagePath)
+        grayImage = cv2.cvtColor(originalImage, cv2.COLOR_BGR2GRAY)
+        (thresh, blackAndWhiteImage) = cv2.threshold(grayImage, 127, 255, cv2.THRESH_BINARY)
+        cv2.imwrite('blackandwhite-image.'+self.img_format,blackAndWhiteImage)
+        # new_image=cv.imread('blackandwhite-image.png')
+        pixmap= QPixmap('blackandwhite-image.'+self.img_format)
+        scaled = pixmap.scaled(self.op_size)
+        self.ui.outputimage.setPixmap(scaled)
+        self.imagePath = self.cwd+"/blackandwhite-image."+self.img_format
+            
 
-    def contrastExposure(self):
-        pass
+    def contrastExposure(self,contrast,brightness):
+        alpha = 1+2.0*contrast # Contrast control (1.0-3.0)
+        beta = brightness#*100 # Brightness control (0-100)
+        image = cv2.imread(self.imagePath)
+        adjusted = cv2.convertScaleAbs(image, alpha=alpha, beta=beta)
+        file_name = ""
+        if brightness == 0:
+            file_name = "contrast-image."+self.img_format
+            self.ui.contrat_label.setText(str(int(contrast*100)))
+        elif contrast == 0:
+            file_name = "Exposure-image."+self.img_format
+            self.ui.label_2.setText(str(brightness))
 
+        cv2.imwrite(file_name,adjusted)
+        pixmap= QPixmap(file_name)
+        scaled = pixmap.scaled(self.op_size)
+        self.ui.outputimage.setPixmap(scaled)
+        
     def rotate(self):
-        pass
+        degrees_to_rotate=self.ui.rotate.value()
+        self.ui.label.setText(str(degrees_to_rotate))
+        # image=self.image_copy
+        image = Image.open(self.imagePath)
+        rotated_image = image.rotate(degrees_to_rotate) 
+        
+        rotated_image.save('rotated-image.'+self.img_format)
+        # new_image=cv.imread('rotated-image.png')
+        
+        pixmap= QPixmap('rotated-image.'+self.img_format)
+        scaled = pixmap.scaled(self.op_size)
+        self.ui.outputimage.setPixmap(scaled)
+               
 
     def flip_right_left_image(self):
-        pass
-
+        # image=self.image_copy
+        image = Image.open(self.imagePath)
+        image = image.convert('RGB')
+        rotated_image = image.transpose(Image.FLIP_LEFT_RIGHT)
+        rotated_image.save('Mirrored_image.'+self.img_format) 
+        # rotated_image=cv.imread('Mirrored_image.png') 
+       
+        pixmap= QPixmap('Mirrored_image.'+self.img_format)
+        scaled = pixmap.scaled(self.op_size)
+        self.ui.outputimage.setPixmap(scaled)
+        self.imagePath = self.cwd+"/Mirrored_image.png" 
+    
     def flip_top_down_image(self):
-        pass
+        # image=self.image_copy
+        image = Image.open(self.imagePath)
+        image = image.convert('RGB')
+        rotated_image1 = image.transpose(Image.FLIP_TOP_BOTTOM)
+        rotated_image1.save('Mirrored_image1.'+self.img_format) 
+        # rotated_image1=cv.imread('Mirrored_image1.png')
+        pixmap= QPixmap('Mirrored_image1.'+self.img_format)
+        scaled = pixmap.scaled(self.op_size)
+        self.ui.outputimage.setPixmap(scaled)  
+        self.imagePath = self.cwd+"/Mirrored_image1."+self.img_format
 
     def Temp(self):
         temperaturedfactor =self.ui.tempreture.value()
