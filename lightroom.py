@@ -257,92 +257,95 @@ class Main(QtWidgets.QMainWindow ,Ui_MainWindow):
     def flip_top_down_image(self):
         pass
 
+    #Temperature Function
     def Temp(self):
         temperaturedfactor =self.ui.tempreture.value()
         self.ui.temp_label.setText(str(temperaturedfactor))
         temperaturedfactor=temperaturedfactor/100
-        # image=self.image_copy
+      
         im = Image.open(self.imagePath)
         im = im.convert('RGB')
         filter = ImageEnhance.Color(im) 
         if(temperaturedfactor*10>0): 
-            im_s_1=filter.enhance(temperaturedfactor*10) 
-            im_s_1.save('temp_image.'+self.img_format);  
-            # new_image=cv.imread('temp_image.png') 
+            im_s_1=filter.enhance(temperaturedfactor*10)       #Hotted image 
+            im_s_1.save('temp_image.'+self.img_format);         #save  image
+             
         else: 
-            im_s_2=filter.enhance(temperaturedfactor*10) 
-            im_s_2.save('temp_image.'+self.img_format);  
-            # new_image2=cv.imread('temp_image.png')  
+            im_s_2=filter.enhance(temperaturedfactor*10)       #cooled image
+            im_s_2.save('temp_image.'+self.img_format);        #save  image
+             
         
         pixmap= QPixmap('temp_image.'+self.img_format)
         scaled = pixmap.scaled(self.op_size)
         self.ui.outputimage.setPixmap(scaled)
 
+    #LOGO Function
     def LOGO(self):
-        # image =self.image_copy
+        
         im = Image.open(self.imagePath) 
-        im = im.convert('RGB')
-        # logo = cv.imread('logo.PNG')
+        im = im.convert('RGB')       
+        
         lo = Image.open('logo.PNG')
 
         im_copy = im.copy()
 
-        position = ((im_copy.width - lo.width), (im_copy.height - lo.height))
+        position = ((im_copy.width - lo.width), (im_copy.height - lo.height))    #calculate position for puting logo in image itself
 
         im_copy.paste(lo, position)
 
-        im_copy.save('looged_image.'+self.img_format)
-        # im_copy=cv.imread('looged_image.png')  
+        im_copy.save('looged_image.'+self.img_format)             #save image
+         
         pixmap= QPixmap('looged_image.'+self.img_format)
         scaled = pixmap.scaled(self.op_size)
         self.ui.outputimage.setPixmap(scaled)
         self.imagePath = self.cwd+"/looged_image."+self.img_format
 
+    # Effects Function Using ColorMap
     def Effects(self): 
         number=self.ui.coloreffects.value()
         self.ui.label_4.setText(str(number))
         
-        # image =self.image_copy
-        im_gray = cv2.imread(self.imagePath,cv2.IMREAD_GRAYSCALE)
+        
+        im_gray = cv2.imread(self.imagePath,cv2.IMREAD_GRAYSCALE)      #convert image into gray scale image
         if number==1:
-         im_color= cv2.applyColorMap(im_gray,cv2.COLORMAP_AUTUMN) 
+         im_color= cv2.applyColorMap(im_gray,cv2.COLORMAP_AUTUMN) #COLORMAP_AUTUMN
         elif number==2: 
-          im_color= cv2.applyColorMap(im_gray,cv2.COLORMAP_BONE)  
+          im_color= cv2.applyColorMap(im_gray,cv2.COLORMAP_BONE)  #COLORMAP_BONE
         elif number==3: 
-          im_color= cv2.applyColorMap(im_gray,cv2.COLORMAP_JET)  
+          im_color= cv2.applyColorMap(im_gray,cv2.COLORMAP_JET)   #COLORMAP_JET
         elif number==4: 
-          im_color= cv2.applyColorMap(im_gray,cv2.COLORMAP_WINTER)  
+          im_color= cv2.applyColorMap(im_gray,cv2.COLORMAP_WINTER)  #COLORMAP_WINTER
         elif number==5: 
-          im_color= cv2.applyColorMap(im_gray,cv2.COLORMAP_RAINBOW)  
+          im_color= cv2.applyColorMap(im_gray,cv2.COLORMAP_RAINBOW)  #COLORMAP_RAINBOW
         elif number==6: 
-          im_color= cv2.applyColorMap(im_gray,cv2.COLORMAP_OCEAN) 
+          im_color= cv2.applyColorMap(im_gray,cv2.COLORMAP_OCEAN)    #COLORMAP_OCEAN
         elif number==7: 
-          im_color= cv2.applyColorMap(im_gray,cv2.COLORMAP_SUMMER) 
+          im_color= cv2.applyColorMap(im_gray,cv2.COLORMAP_SUMMER)    #COLORMAP_SUMMER
         elif number==8: 
-          im_color= cv2.applyColorMap(im_gray,cv2.COLORMAP_SPRING)     
+          im_color= cv2.applyColorMap(im_gray,cv2.COLORMAP_SPRING)     #COLORMAP_SPRING
         elif number==9: 
-          im_color= cv2.applyColorMap(im_gray,cv2.COLORMAP_COOL)     
+          im_color= cv2.applyColorMap(im_gray,cv2.COLORMAP_COOL)     #COLORMAP_COOL
         elif number==10: 
-          im_color= cv2.applyColorMap(im_gray,cv2.COLORMAP_HSV)  
+          im_color= cv2.applyColorMap(im_gray,cv2.COLORMAP_HSV)      #COLORMAP_HSV
         elif number==11: 
-          im_color= cv2.applyColorMap(im_gray,cv2.COLORMAP_PINK)  
+          im_color= cv2.applyColorMap(im_gray,cv2.COLORMAP_PINK)      #COLORMAP_PINK
         elif number==12: 
-          im_color= cv2.applyColorMap(im_gray,cv2.COLORMAP_HOT)      
+          im_color= cv2.applyColorMap(im_gray,cv2.COLORMAP_HOT)    #COLORMAP_HOT  
         elif number==13 : 
-          im_color=im_gray
+          im_color=im_gray                                         #gray scale image
         else:
             im_color = cv2.imread(self.imagePath)
             
         
-        im_color =cv2.imwrite('effected_image.'+self.img_format,im_color)
-        # im_color=cv.imread('effected_image.png')
+        im_color =cv2.imwrite('effected_image.'+self.img_format,im_color) #save  image
+        
         pixmap= QPixmap('effected_image.'+self.img_format)
         scaled = pixmap.scaled(self.op_size)
         self.ui.outputimage.setPixmap(scaled)
 
-
+    #Saturation Function to enhance image
     def saturation(self):
-        # -300 to 300 
+        # range from -300 to 300 
         value=self.ui.saturation.value()
         self.ui.sat_label.setText(str(value))
         image =cv2.imread(self.imagePath)
@@ -352,26 +355,27 @@ class Main(QtWidgets.QMainWindow ,Ui_MainWindow):
         s = np.clip(s, 0, 255)
         image_hsv = cv2.merge([h, s, v])
         new_img = cv2.cvtColor(image_hsv.astype("uint8"), cv2.COLOR_HSV2BGR) 
-        new_img =cv2.imwrite('saturation_image.'+self.img_format,new_img)
-        # new_image=cv.imread('saturation_image.png') 
+        new_img =cv2.imwrite('saturation_image.'+self.img_format,new_img)      #save  image
+        
         
         pixmap= QPixmap('saturation_image.'+self.img_format)
         scaled = pixmap.scaled(self.op_size)
         self.ui.outputimage.setPixmap(scaled)
 
+    #Cartoon Function
     def cartoon(self):
         cartoon_image = cv2.imread(self.imagePath)
 
         gray_image = cv2.cvtColor(cartoon_image, cv2.COLOR_BGR2GRAY)
-        gray_image = cv2.medianBlur(gray_image,7)  
+        gray_image = cv2.medianBlur(gray_image,7)                               #apply median blur to reduce image noise in gray scale image
         edges = cv2.adaptiveThreshold(gray_image,255,cv2.ADAPTIVE_THRESH_MEAN_C, 
-                                        cv2.THRESH_BINARY,9,2) 
+                                        cv2.THRESH_BINARY,9,2)                  #apply edge mask from gray scale image by adaptive thresholding
 
 
-        color = cv2.bilateralFilter(cartoon_image, 9, 9, 7) 
+        color = cv2.bilateralFilter(cartoon_image, 9, 9, 7)                     #apply bilateral_filter
         cartoon = cv2.bitwise_and(color, color, mask=edges)
-        cv2.imwrite('cartoon-image.'+self.img_format,cartoon)
-        # new_image=cv.imread('cartoon-image.png') 
+        cv2.imwrite('cartoon-image.'+self.img_format,cartoon)                   #save  image
+         
         
         pixmap= QPixmap('cartoon-image.'+self.img_format)
         scaled = pixmap.scaled(self.op_size)
