@@ -3,7 +3,7 @@
 The project aims to implement a simple and free image organization and image manipulation software similar to Lightroom and other photo editor applications that enable users to edit and modify their photos through editing, you can make your already stunning photos even more perfect by adjusting metrics like exposure and color.
 
 # Demo and how to use Link:
-
+https://www.youtube.com/watch?v=5-UH_Kd_LRo&t=95s
 
 # The project main parts are:
 1.	Acquisition: inputting your image through GUI.
