@@ -298,7 +298,7 @@ class Main(QtWidgets.QMainWindow ,Ui_MainWindow):
         pixmap= QPixmap('Mirrored_image.'+self.img_format)
         scaled = pixmap.scaled(self.op_size)
         self.ui.outputimage.setPixmap(scaled)
-        self.imagePath = self.cwd+"/Mirrored_image.png" 
+        self.imagePath = self.cwd+"/Mirrored_image."+self.img_format
     
     def flip_top_down_image(self):
         # image=self.image_copy
