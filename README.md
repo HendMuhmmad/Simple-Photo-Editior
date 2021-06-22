@@ -5,6 +5,10 @@ The project aims to implement a simple and free image organization and image man
 # Demo and how to use Link:
 https://www.youtube.com/watch?v=5-UH_Kd_LRo&t=95s
 
+# Project containig exe file:
+#### couldn't be pushed on github
+https://www.mediafire.com/file/c2aryrmru23frod/Simple-Photo-Editior.zip/file
+
 # The project main parts are:
 1.	Acquisition: inputting your image through GUI.
 2.	Light editing: includes exposure, contrast.
