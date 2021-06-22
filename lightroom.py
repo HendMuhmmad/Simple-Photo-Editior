@@ -136,7 +136,9 @@ class Main(QtWidgets.QMainWindow ,Ui_MainWindow):
                                                 "Image Files (*.jpg *.png *.jpeg *.ico);;All Files (*)")
         if files:
             self.imagePath=str(files[0])
-            self.img_format = self.imagePath.split('\\')[-1].split(".")[1]
+            # print(self.imagePath)
+            self.img_format = self.imagePath.split(".")[-1]
+            # print(self.img_format)
             pixmap= QPixmap(self.imagePath)
             # self.ui.inputimage.setScaledContents(True)
             self.op_size = self.ui.outputimage.size()
